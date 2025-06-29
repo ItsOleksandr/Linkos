@@ -1,0 +1,36 @@
+1. SELECT * FROM Address
+WHERE GroupID IS NULL;
+
+2. SELECT s.*
+FROM Schedule s
+JOIN Address a ON s.GroupID = a.GroupID
+WHERE a.Address = 'Бойченко 30';
+
+3.SELECT Day, COUNT(*) AS Count
+FROM Schedule
+GROUP BY Day
+ORDER BY Count DESC
+LIMIT 1;
+
+4.SELECT g.GroupName, a.GroupID, 
+    SUM(
+        CAST(strftime('%s', s.EndTime) AS INTEGER) - CAST(strftime('%s', s.StartTime) AS INTEGER)
+    ) / 3600.0 AS TotalHours
+FROM Schedule s
+JOIN Address a ON s.GroupID = a.GroupID
+JOIN GroupTable g ON a.GroupID = g.GroupID
+WHERE s.Day IN ('Понеділок', 'Вівторок', 'Середа')
+GROUP BY a.GroupID, g.GroupName
+ORDER BY TotalHours DESC
+LIMIT 1;
+
+5.UPDATE Address
+SET GroupID = 4
+WHERE Address = 'Бажана 14';
+
+6.INSERT INTO Address (Address, GroupID) VALUES ('Троя 7', 1);
+INSERT INTO Address (Address, GroupID) VALUES ('ДВРЗ 9', 4);
+
+7.INSERT INTO Schedule (Day, StartTime, EndTime, GroupID)
+VALUES ('П’ятниця', '14:00', '18:00', 3);
+
