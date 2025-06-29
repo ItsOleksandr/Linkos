@@ -1,0 +1,28 @@
+@using WebApplication1.Data
+@model WebApplication1.Models.AdminViewModel
+<h5>
+    Available areas:
+    @foreach (var power in Schedule.PowerOffs)
+    {
+        <div>
+            <div style="margin-top:25px;margin-bottom: 5px;">@power.StartTime.ToShortTimeString() - @power.EndTime.ToShortTimeString()
+                <form action="/admin/switch-area-electricity/@power.Areas.First()" method="post">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">Switch electricity</button>
+                </form>
+            </div>
+            @foreach (var area in power.Areas)
+            {
+                var powerOff = Schedule.GetByArea(area);
+                bool isElectricityOff = powerOff.IsElectricityOff();
+                <p style="margin: 1px">@area @(isElectricityOff ? "🪫" : "⚡")</p>
+            }
+        </div>
+    }
+</h5>
+<div style="color: red;">@Model.ExceptionMessage</div>
+<h5>Excel import:</h5>
+<form action="/admin/import-excel" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept="*.xlsx"/>
+    <button type="submit">Import</button>   
+</form>
+<a href="/admin/export-json" target="_blank">Export</a>

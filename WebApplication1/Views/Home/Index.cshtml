@@ -1,0 +1,44 @@
+﻿@using WebApplication1.Data
+@model IndexViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@if(Model.PowerOff == null)
+{
+    <h5>
+        Available areas:
+        @foreach (var power in Schedule.PowerOffs)
+        {
+            <div><div style="margin-top:25px;margin-bottom: 5px;">@power.StartTime.ToShortTimeString() - @power.EndTime.ToShortTimeString()</div> 
+                @foreach (var area in power.Areas)
+                {
+                    var powerOff = Schedule.GetByArea(area);
+                    bool isElectricityOff = powerOff.IsElectricityOff();
+                    <p style="margin: 1px">@area @(isElectricityOff ? "🪫" : "⚡")</p>
+                }
+            </div>
+        }
+    </h5>
+    
+    <h5 style="margin-top:20px;">Search area:</h5>
+    <form action="/" method="get">
+        <input type="text" name="area_name" placeholder="Area name">
+        <input type="submit" value="Search">
+    </form>
+    if (Model.Exception is ArgumentException)
+    {
+        <div style="color:red">@Model.Exception.Message</div>
+    }
+}
+else
+{
+    <h5>@(Model.PowerOff.IsElectricityOff() ? "🪫 Now No electrocity " : "⚡ Now There is electricity")</h5>
+    <p style="margin-bottom: 5px">📅 No electrocity days of week:</p>
+    @foreach (var i in Model.PowerOff.RegularityDaysOfWeek)
+    {
+        <div style="font-style:italic">@(((DayOfWeek)i).ToString())</div>   
+    }
+    <p style="margin-top:15px">Energy unavailable from: @Model.PowerOff.StartTime.ToShortTimeString()<br> to: @Model.PowerOff.EndTime.ToShortTimeString()</p>
+    
+}
